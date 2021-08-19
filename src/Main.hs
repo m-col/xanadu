@@ -41,13 +41,7 @@ activateApp app = do
     return ()
 
 populate :: Gtk.ListStore -> FilePath -> IO ()
-populate listStore root = do
-    contents <- ls root
-    addItems contents
-    return ()
-  where
-    addItems :: [FilePath] -> IO [()]
-    addItems paths = sequence $ map (addItem listStore) paths
+populate listStore root = ls root >>= mconcat . map (addItem listStore)
 
 addItem :: Gtk.ListStore -> FilePath -> IO ()
 addItem listStore path = do
