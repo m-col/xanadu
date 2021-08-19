@@ -32,6 +32,7 @@ activateApp app = do
     listStore <- Gtk.listStoreNew [GType.gtypeString]
     view <- new Gtk.IconView
         [ #model := listStore
+        , #selectionMode := Gtk.SelectionModeMultiple
         , #textColumn := 0
         , #tooltipColumn := 0
         , #pixbufColumn := 1
