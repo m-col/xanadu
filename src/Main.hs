@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, OverloadedLabels #-}
+{-# LANGUAGE OverloadedStrings, OverloadedLabels, TypeApplications #-}
 
 module Main where
 
@@ -10,6 +10,7 @@ import System.Directory (getDirectoryContents)
 
 import Data.GI.Base
 import qualified Data.GI.Base.GType as GType
+import qualified GI.GdkPixbuf as Pixbuf
 import qualified GI.Gio as Gio
 import qualified GI.Gtk as Gtk
 
@@ -29,7 +30,8 @@ activateApp app = do
         [ #application := app
         , #title := "xanadu"
         ]
-    listStore <- Gtk.listStoreNew [GType.gtypeString]
+    pixbufGType <- glibType @Pixbuf.Pixbuf
+    listStore <- Gtk.listStoreNew [GType.gtypeString, pixbufGType]
     view <- new Gtk.IconView
         [ #model := listStore
         , #selectionMode := Gtk.SelectionModeMultiple
@@ -48,8 +50,10 @@ populate listStore root = ls root >>= mconcat . map (addItem listStore)
 addItem :: Gtk.ListStore -> FilePath -> IO ()
 addItem listStore path = do
     value <- Gtk.toGValue $ Just path
+    pixbuf <- Pixbuf.pixbufNewFromFile "/usr/share/icons/Adwaita/32x32/mimetypes/image-x-generic.png"
+    icon <- Gtk.toGValue pixbuf
     iter <- Gtk.listStoreAppend listStore
-    Gtk.listStoreSet listStore iter [0] [value]
+    Gtk.listStoreSet listStore iter [0, 1] [value, icon]
 
 ls :: FilePath -> IO [FilePath]
 ls = fmap (filter (\f -> f /= "." && f /= "..")) . getDirectoryContents
