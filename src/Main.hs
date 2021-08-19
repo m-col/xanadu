@@ -4,6 +4,7 @@ module Main where
 
 import Data.Functor (void)
 import Data.Maybe
+import Data.Text (pack)
 import Data.Void
 import GHC.Int (Int32)
 import System.Directory (getDirectoryContents)
@@ -39,21 +40,32 @@ activateApp app = do
         , #tooltipColumn := 0
         , #pixbufColumn := 1
         ]
-    populate listStore "/home/mcol/Desktop"
+    screen <- Gtk.windowGetScreen win
+    iconTheme <- Gtk.iconThemeGetForScreen screen
+    populate listStore iconTheme "/home/mcol/Desktop"
     #add win view
     #showAll win
     return ()
 
-populate :: Gtk.ListStore -> FilePath -> IO ()
-populate listStore root = ls root >>= mconcat . map (addItem listStore)
+populate :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
+populate listStore iconTheme root = ls root >>= mconcat . map (addItem listStore iconTheme)
 
-addItem :: Gtk.ListStore -> FilePath -> IO ()
-addItem listStore path = do
-    value <- Gtk.toGValue $ Just path
-    pixbuf <- Pixbuf.pixbufNewFromFile "/usr/share/icons/Adwaita/32x32/mimetypes/image-x-generic.png"
-    icon <- Gtk.toGValue pixbuf
+-- The Gtk is working, but that's some ugly haskell
+addItem :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
+addItem listStore iconTheme path = do
     iter <- Gtk.listStoreAppend listStore
-    Gtk.listStoreSet listStore iter [0, 1] [value, icon]
+    value <- Gtk.toGValue $ Just path
+    contentType <- Gio.contentTypeGuess (Just . pack $ path) Nothing
+    iconName <- Gio.contentTypeGetGenericIconName $ fst contentType
+    case iconName of
+        Nothing -> Gtk.listStoreSet listStore iter [0] [value]
+        (Just iconName') -> do
+            maybePixbuf <- Gtk.iconThemeLoadIcon iconTheme iconName' 32 []
+            case maybePixbuf of
+                Nothing -> Gtk.listStoreSet listStore iter [0] [value]
+                pixbuf -> do
+                    pixbuf' <- Gtk.toGValue pixbuf
+                    Gtk.listStoreSet listStore iter [0, 1] [value, pixbuf']
 
 ls :: FilePath -> IO [FilePath]
 ls = fmap (filter (\f -> f /= "." && f /= "..")) . getDirectoryContents
