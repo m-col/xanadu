@@ -33,6 +33,7 @@ activateApp app = do
     view <- new Gtk.IconView
         [ #model := listStore
         , #textColumn := 0
+        , #tooltipColumn := 0
         , #pixbufColumn := 1
         ]
     populate listStore "/home/mcol/Desktop"
