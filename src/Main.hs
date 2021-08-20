@@ -7,7 +7,7 @@ import Data.Maybe
 import Data.Text (pack)
 import Data.Void
 import GHC.Int (Int32)
-import System.Directory (getDirectoryContents)
+import System.Directory (getDirectoryContents, getHomeDirectory)
 
 import Data.GI.Base
 import qualified Data.GI.Base.GType as GType
@@ -42,7 +42,8 @@ activateApp app = do
         ]
     screen <- Gtk.windowGetScreen win
     iconTheme <- Gtk.iconThemeGetForScreen screen
-    populate listStore iconTheme "/home/mcol/Desktop"
+    homeDir <- getHomeDirectory
+    populate listStore iconTheme $ homeDir <> "/Desktop"
     #add win view
     #showAll win
     return ()
