@@ -2,11 +2,12 @@
 
 module Icons where
 
+import Control.Applicative
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Maybe
 import Data.Maybe
 import Data.Text (pack)
-import System.Directory (getDirectoryContents, getHomeDirectory)
+import System.Directory (doesDirectoryExist, listDirectory, getHomeDirectory)
 
 import Data.GI.Base
 import qualified Data.GI.Base.GType as GType
@@ -30,23 +31,31 @@ initIcons win = do
         ]
 
 populate :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
-populate listStore iconTheme root = ls root >>= mconcat . map (addItem listStore iconTheme)
+populate listStore iconTheme root = getItems root >>= mconcat . map (addItem listStore iconTheme)
 
-addItem :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
-addItem listStore iconTheme path = do
+addItem :: Gtk.ListStore -> Gtk.IconTheme -> Item -> IO ()
+addItem listStore iconTheme item = do
     iter <- Gtk.listStoreAppend listStore
-    value <- Gtk.toGValue $ Just path
-    icon <- runMaybeT $ getIcon iconTheme path
+    value <- Gtk.toGValue . Just . itemPath $ item
+    icon <- runMaybeT $ getIcon iconTheme item
     case icon of
         Nothing -> Gtk.listStoreSet listStore iter [0] [value]
         (Just icon') -> Gtk.listStoreSet listStore iter [0, 1] [value, icon']
 
-getIcon :: Gtk.IconTheme -> FilePath -> MaybeT IO GValue
-getIcon iconTheme path = do
-    contentType <- Gio.contentTypeGuess (Just . pack $ path) Nothing
+getIcon :: Gtk.IconTheme -> Item -> MaybeT IO GValue
+getIcon iconTheme item = do
+    contentType <- Gio.contentTypeGuess (Just . pack $ itemPath item) Nothing
     iconName <- MaybeT $ Gio.contentTypeGetGenericIconName . fst $ contentType
     pixbuf <- Gtk.iconThemeLoadIcon iconTheme iconName 32 []
     liftIO . Gtk.toGValue $ pixbuf
 
-ls :: FilePath -> IO [FilePath]
-ls = fmap (filter (\f -> f /= "." && f /= "..")) . getDirectoryContents
+data Item = Item
+    { itemPath :: FilePath
+    , itemIsDir :: Bool
+    } deriving Show
+
+getItems :: FilePath -> IO [Item]
+getItems root = do
+    path <- listDirectory root
+    isDir <- sequence $ doesDirectoryExist . (<>) root <$> path
+    return . getZipList $ Item <$> ZipList path <*> ZipList isDir
