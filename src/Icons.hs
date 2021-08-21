@@ -3,11 +3,13 @@
 module Icons where
 
 import Control.Applicative
+import Control.Monad (liftM)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Maybe
 import Data.Maybe
 import Data.Text (pack)
 import System.Directory (doesDirectoryExist, listDirectory, getHomeDirectory)
+import System.Environment (lookupEnv)
 
 import Data.GI.Base
 import qualified Data.GI.Base.GType as GType
@@ -20,8 +22,8 @@ initIcons win = do
     pixbufGType <- glibType @Pixbuf.Pixbuf
     listStore <- Gtk.listStoreNew [GType.gtypeString, pixbufGType]
     iconTheme <- Gtk.iconThemeGetForScreen =<< Gtk.windowGetScreen win
-    homeDir <- getHomeDirectory
-    populate listStore iconTheme $ homeDir <> "/Desktop"
+    root <- getRoot
+    populate listStore iconTheme root
     new Gtk.IconView
         [ #model := listStore
         , #selectionMode := Gtk.SelectionModeMultiple
@@ -29,6 +31,15 @@ initIcons win = do
         , #tooltipColumn := 0
         , #pixbufColumn := 1
         ]
+
+-- Root folder is $(XDG_DESKTOP_DIR:-$HOME/Desktop)
+getRoot :: IO FilePath
+getRoot = do
+    fromEnv <- lookupEnv "XDG_DESKTOP_DIR"
+    case fromEnv of
+        Nothing -> liftM ((<>) "/Desktop") getHomeDirectory
+        Just "" -> liftM ((<>) "/Desktop") getHomeDirectory
+        Just path -> return path
 
 populate :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
 populate listStore iconTheme root = getItems root >>= mconcat . map (addItem listStore iconTheme)
