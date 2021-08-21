@@ -10,6 +10,7 @@ import Data.Maybe
 import Data.Text (pack)
 import System.Directory (doesDirectoryExist, listDirectory, getHomeDirectory)
 import System.Environment (lookupEnv)
+import System.IO (hFlush, stdout)
 
 import Data.GI.Base
 import qualified Data.GI.Base.GType as GType
@@ -80,4 +81,4 @@ onItemActivated listStore root treePath = do
     maybeValue <- (Gtk.fromGValue gvalue :: IO (Maybe String))
     case maybeValue of
         Nothing -> return ()
-        Just value -> putStrLn $ root <> "/" <> value
+        Just value -> putStrLn (root <> "/" <> value) >> hFlush stdout
