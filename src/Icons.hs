@@ -24,13 +24,15 @@ initIcons win = do
     iconTheme <- Gtk.iconThemeGetForScreen =<< Gtk.windowGetScreen win
     root <- getRoot
     populate listStore iconTheme root
-    new Gtk.IconView
+    iconView <- new Gtk.IconView
         [ #model := listStore
         , #selectionMode := Gtk.SelectionModeMultiple
         , #textColumn := 0
         , #tooltipColumn := 0
         , #pixbufColumn := 1
         ]
+    on iconView #itemActivated $ onItemActivated listStore
+    return iconView
 
 -- Root folder is $(XDG_DESKTOP_DIR:-$HOME/Desktop)
 getRoot :: IO FilePath
@@ -70,3 +72,12 @@ getItems root = do
     path <- listDirectory root
     isDir <- sequence $ doesDirectoryExist . (<>) root <$> path
     return . getZipList $ Item <$> ZipList path <*> ZipList isDir
+
+onItemActivated :: Gtk.ListStore -> Gtk.TreePath -> IO ()
+onItemActivated listStore treePath = do
+    (_, iter) <- Gtk.treeModelGetIter listStore treePath
+    gvalue <- Gtk.treeModelGetValue listStore iter 0
+    maybeValue <- (Gtk.fromGValue gvalue :: IO (Maybe String))
+    case maybeValue of
+        Nothing -> return ()
+        Just value -> putStrLn $ show value
