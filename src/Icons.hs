@@ -31,7 +31,7 @@ initIcons win = do
         , #tooltipColumn := 0
         , #pixbufColumn := 1
         ]
-    on iconView #itemActivated $ onItemActivated listStore
+    on iconView #itemActivated $ onItemActivated listStore root
     return iconView
 
 -- Root folder is $(XDG_DESKTOP_DIR:-$HOME/Desktop)
@@ -73,11 +73,11 @@ getItems root = do
     isDir <- sequence $ doesDirectoryExist . (<>) root <$> path
     return . getZipList $ Item <$> ZipList path <*> ZipList isDir
 
-onItemActivated :: Gtk.ListStore -> Gtk.TreePath -> IO ()
-onItemActivated listStore treePath = do
+onItemActivated :: Gtk.ListStore -> FilePath -> Gtk.TreePath -> IO ()
+onItemActivated listStore root treePath = do
     (_, iter) <- Gtk.treeModelGetIter listStore treePath
     gvalue <- Gtk.treeModelGetValue listStore iter 0
     maybeValue <- (Gtk.fromGValue gvalue :: IO (Maybe String))
     case maybeValue of
         Nothing -> return ()
-        Just value -> putStrLn $ show value
+        Just value -> putStrLn $ root <> "/" <> value
