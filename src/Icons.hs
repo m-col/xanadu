@@ -18,18 +18,16 @@ initIcons :: Gtk.ApplicationWindow -> IO Gtk.IconView
 initIcons win = do
     pixbufGType <- glibType @Pixbuf.Pixbuf
     listStore <- Gtk.listStoreNew [GType.gtypeString, pixbufGType]
-    view <- new Gtk.IconView
+    iconTheme <- Gtk.iconThemeGetForScreen =<< Gtk.windowGetScreen win
+    homeDir <- getHomeDirectory
+    populate listStore iconTheme $ homeDir <> "/Desktop"
+    new Gtk.IconView
         [ #model := listStore
         , #selectionMode := Gtk.SelectionModeMultiple
         , #textColumn := 0
         , #tooltipColumn := 0
         , #pixbufColumn := 1
         ]
-    screen <- Gtk.windowGetScreen win
-    iconTheme <- Gtk.iconThemeGetForScreen screen
-    homeDir <- getHomeDirectory
-    populate listStore iconTheme $ homeDir <> "/Desktop"
-    return view
 
 populate :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
 populate listStore iconTheme root = ls root >>= mconcat . map (addItem listStore iconTheme)
