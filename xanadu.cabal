@@ -24,3 +24,4 @@ executable xanadu
                      , gi-gtk
                      , haskell-gi-base
                      , text
+                     , transformers

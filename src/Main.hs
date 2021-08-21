@@ -2,6 +2,8 @@
 
 module Main where
 
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Maybe
 import Data.Functor (void)
 import Data.Maybe
 import Data.Text (pack)
@@ -51,22 +53,21 @@ activateApp app = do
 populate :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
 populate listStore iconTheme root = ls root >>= mconcat . map (addItem listStore iconTheme)
 
--- The Gtk is working, but that's some ugly haskell
 addItem :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
 addItem listStore iconTheme path = do
     iter <- Gtk.listStoreAppend listStore
     value <- Gtk.toGValue $ Just path
-    contentType <- Gio.contentTypeGuess (Just . pack $ path) Nothing
-    iconName <- Gio.contentTypeGetGenericIconName $ fst contentType
-    case iconName of
+    icon <- runMaybeT $ getIcon iconTheme path
+    case icon of
         Nothing -> Gtk.listStoreSet listStore iter [0] [value]
-        (Just iconName') -> do
-            maybePixbuf <- Gtk.iconThemeLoadIcon iconTheme iconName' 32 []
-            case maybePixbuf of
-                Nothing -> Gtk.listStoreSet listStore iter [0] [value]
-                pixbuf -> do
-                    pixbuf' <- Gtk.toGValue pixbuf
-                    Gtk.listStoreSet listStore iter [0, 1] [value, pixbuf']
+        (Just icon') -> Gtk.listStoreSet listStore iter [0, 1] [value, icon']
+
+getIcon :: Gtk.IconTheme -> FilePath -> MaybeT IO GValue
+getIcon iconTheme path = do
+    contentType <- Gio.contentTypeGuess (Just . pack $ path) Nothing
+    iconName <- MaybeT $ Gio.contentTypeGetGenericIconName . fst $ contentType
+    pixbuf <- Gtk.iconThemeLoadIcon iconTheme iconName 32 []
+    liftIO . Gtk.toGValue $ pixbuf
 
 ls :: FilePath -> IO [FilePath]
 ls = fmap (filter (\f -> f /= "." && f /= "..")) . getDirectoryContents
