@@ -20,8 +20,9 @@ xanadu does not launch new processes itself. Instead, it simply prints the full
 path of activated items to the standard output stream. This makes it easy to
 use better-suited tools to figure out what to do.
 
-For example, this will delegate item handling to the useful ``xdg-open`` script
-packaged by many unix distributions, and folder handling to ``thunar``:
+For example, this will delegate item handling to the useful ``mimeopen`` script
+packaged by many unix distributions ("perl-file-mimeinfo" on Arch Linux), and
+folder handling to ``thunar``:
 
 .. code-block:: sh
    xanadu | while read item
@@ -30,7 +31,7 @@ packaged by many unix distributions, and folder handling to ``thunar``:
        then
            thunar "$item"
        else
-           xdg-open $item
+           mimeopen $item
         fi
    done
 
