@@ -23,6 +23,7 @@ activateApp app = do
     win <- new Gtk.ApplicationWindow
         [ #application := app
         , #title := "xanadu"
+        , #resizable := False
         ]
     iconView <- Icons.initIcons win
     #add win iconView
