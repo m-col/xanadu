@@ -21,10 +21,18 @@ path of activated items to the standard output stream. This makes it easy to
 use better-suited tools to figure out what to do.
 
 For example, this will delegate item handling to the useful ``xdg-open`` script
-packaged by many unix distributions:
+packaged by many unix distributions, and folder handling to ``thunar``:
 
 .. code-block:: sh
    xanadu | while read item
    do
-       xdg-open $item
+       if test -d "$item"
+       then
+           thunar "$item"
+       else
+           xdg-open $item
+        fi
    done
+
+For inspiration as to what tools to delegate to, I recommend looking at
+https://wiki.archlinux.org/title/Default_applications.
