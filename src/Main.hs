@@ -11,7 +11,7 @@ import qualified GI.Gtk as Gtk
 main :: IO ()
 main = do
     app <- new Gtk.Application
-      [ #applicationId := "xanadu"
+      [ #applicationId := "xyz.mcol.xanadu"
       , #flags := [ Gio.ApplicationFlagsFlagsNone ]
       ]
     on app #activate $ activateApp app
