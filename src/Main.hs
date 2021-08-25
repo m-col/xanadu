@@ -5,6 +5,7 @@ module Main where
 import qualified Icons
 
 import Data.GI.Base
+import qualified GI.Gdk.Enums as Enums
 import qualified GI.Gio as Gio
 import qualified GI.Gtk as Gtk
 
@@ -25,6 +26,7 @@ activateApp app = do
         , #title := "xanadu"
         , #resizable := False
         ]
+    #setTypeHint win Enums.WindowTypeHintDesktop
     iconView <- Icons.initIcons win
     #add win iconView
     #showAll win
