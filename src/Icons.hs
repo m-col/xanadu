@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings, OverloadedLabels, TypeApplications #-}
 
-module Icons where
+module Icons (
+    initIcons
+) where
 
 import Control.Applicative
 import Control.Monad (liftM)
