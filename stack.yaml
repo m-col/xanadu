@@ -3,3 +3,10 @@ resolver:
 
 packages:
 - .
+
+# These options are from the Kowainik style guide.
+ghc-options:
+  "$locals": -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+    -Wincomplete-record-updates -Wredundant-constraints -Wpartial-fields
+    -Wmissing-deriving-strategies -Wunused-packages -fno-warn-unused-do-bind
+    -fno-warn-orphans
