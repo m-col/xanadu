@@ -1,12 +1,12 @@
 name:                xanadu
 version:             0.1.0.0
 -- synopsis:
--- description:
-homepage:            https://mcol.xyz/code/xanadu
+description:         A standalone desktop metaphor for standalone window managers.
+homepage:            https://github.com/m-col/xanadu
 license:             BSD3
 license-file:        LICENSE
 author:              Matt Colligan
-maintainer:          mlv@posteo.net
+maintainer:          mcol@posteo.net
 copyright:           2021 Matt Colligan
 category:            Desktop
 build-type:          Simple
