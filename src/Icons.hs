@@ -59,15 +59,12 @@ addItem listStore iconTheme item = do
         (Just icon') -> Gtk.listStoreSet listStore iter [0, 1] [value, icon']
 
 getIcon :: Gtk.IconTheme -> Item -> MaybeT IO GValue
-getIcon iconTheme item =
-    if (itemIsDir item)
-        then
-            Gtk.iconThemeLoadIcon iconTheme "folder" 32 [] >>= liftIO . Gtk.toGValue
-        else do
-            contentType <- Gio.contentTypeGuess (Just . pack $ itemPath item) Nothing
-            iconName <- MaybeT $ Gio.contentTypeGetGenericIconName . fst $ contentType
-            pixbuf <- Gtk.iconThemeLoadIcon iconTheme iconName 32 []
-            liftIO . Gtk.toGValue $ pixbuf
+getIcon iconTheme item
+    | itemIsDir item = liftIO . Gtk.toGValue =<< Gtk.iconThemeLoadIcon iconTheme "folder" 32 []
+    | otherwise = do
+        (contentType, _) <- Gio.contentTypeGuess (Just . pack $ itemPath item) Nothing
+        iconName <- MaybeT . Gio.contentTypeGetGenericIconName $ contentType
+        liftIO . Gtk.toGValue =<< Gtk.iconThemeLoadIcon iconTheme iconName 32 []
 
 data Item = Item
     { itemPath :: FilePath
