@@ -5,13 +5,12 @@ module Icons (
 ) where
 
 import Control.Applicative
-import Control.Monad (liftM)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Maybe
-import Data.Maybe
 import Data.Text (pack)
 import System.Directory (doesDirectoryExist, listDirectory, getHomeDirectory)
 import System.Environment (lookupEnv)
+import System.FilePath ((</>))
 import System.IO (hFlush, stdout)
 
 import Data.GI.Base
@@ -42,12 +41,12 @@ getRoot :: IO FilePath
 getRoot = do
     fromEnv <- lookupEnv "XDG_DESKTOP_DIR"
     case fromEnv of
-        Nothing -> liftM (flip (<>) "/Desktop") getHomeDirectory
-        Just "" -> liftM (flip (<>) "/Desktop") getHomeDirectory
+        Nothing -> (</> "/Desktop") <$> getHomeDirectory
+        Just "" -> (</> "/Desktop") <$> getHomeDirectory
         Just path -> return path
 
 populate :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
-populate listStore iconTheme root = getItems root >>= mconcat . map (addItem listStore iconTheme)
+populate listStore iconTheme root = mconcat . map (addItem listStore iconTheme) =<< getItems root
 
 addItem :: Gtk.ListStore -> Gtk.IconTheme -> Item -> IO ()
 addItem listStore iconTheme item = do
@@ -74,7 +73,7 @@ data Item = Item
 getItems :: FilePath -> IO [Item]
 getItems root = do
     path <- listDirectory root
-    isDir <- sequence $ doesDirectoryExist . ((<>) $ root <> "/") <$> path
+    isDir <- mapM (doesDirectoryExist . (root </>)) path
     return . getZipList $ Item <$> ZipList path <*> ZipList isDir
 
 onItemActivated :: Gtk.ListStore -> FilePath -> Gtk.TreePath -> IO ()
