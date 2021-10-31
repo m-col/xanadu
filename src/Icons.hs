@@ -1,4 +1,6 @@
-{-# LANGUAGE OverloadedStrings, OverloadedLabels, TypeApplications #-}
+{-# LANGUAGE OverloadedLabels #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Icons (
     initIcons
