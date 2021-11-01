@@ -43,8 +43,8 @@ getRoot :: IO FilePath
 getRoot = do
     fromEnv <- lookupEnv "XDG_DESKTOP_DIR"
     case fromEnv of
-        Nothing -> (</> "/Desktop") <$> getHomeDirectory
-        Just "" -> (</> "/Desktop") <$> getHomeDirectory
+        Nothing -> (<> "/Desktop") <$> getHomeDirectory
+        Just "" -> (<> "/Desktop") <$> getHomeDirectory
         Just path -> return path
 
 populate :: Gtk.ListStore -> Gtk.IconTheme -> FilePath -> IO ()
