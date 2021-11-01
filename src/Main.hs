@@ -3,10 +3,10 @@
 
 module Main where
 
-import qualified Icons
+import Icons (initIcons)
+import Window (initWindow)
 
 import Data.GI.Base
-import qualified GI.Gdk.Enums as Enums
 import qualified GI.Gio as Gio
 import qualified GI.Gtk as Gtk
 
@@ -22,13 +22,8 @@ main = do
 
 activateApp :: Gtk.Application -> IO ()
 activateApp app = do
-    win <- new Gtk.ApplicationWindow
-        [ #application := app
-        , #title := "xanadu"
-        , #resizable := False
-        ]
-    #setTypeHint win Enums.WindowTypeHintDesktop
-    iconView <- Icons.initIcons win
+    win <- initWindow app
+    iconView <- initIcons win
     #add win iconView
     #showAll win
     return ()
