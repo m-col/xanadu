@@ -2,11 +2,25 @@ resolver:
   url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/5.yaml
 
 packages:
-- .
+ - ../haskell-gi/base/
+ - ../haskell-gi/
+ - ../haskell-gi/bindings/GLib/
+ - ../haskell-gi/bindings/GModule/
+ - ../haskell-gi/bindings/GObject/
+ - ../haskell-gi/bindings/Atk/
+ - ../haskell-gi/bindings/Gio/
+ - ../haskell-gi/bindings/cairo/
+ - ../haskell-gi/bindings/HarfBuzz/
+ - ../haskell-gi/bindings/Pango/
+ - ../haskell-gi/bindings/GdkPixbuf/
+ - ../haskell-gi/bindings/Gtk-3.0/
+ - ../haskell-gi/bindings/Gdk-3.0/
+ - ../haskell-gi/bindings/GtkLayerShell/
+ - ./
 
 # These options are from the Kowainik style guide.
 ghc-options:
-  "$locals": -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
+  "xanadu": -Wall -Wcompat -Widentities -Wincomplete-uni-patterns
     -Wincomplete-record-updates -Wredundant-constraints -Wpartial-fields
     -Wmissing-deriving-strategies -Wunused-packages -fno-warn-unused-do-bind
     -fno-warn-orphans
