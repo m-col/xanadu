@@ -4,6 +4,7 @@
 module Main where
 
 import Icons (initIcons)
+import Style (initStyle)
 import Window (initWindow)
 
 import Data.GI.Base
@@ -23,6 +24,7 @@ main = do
 activateApp :: Gtk.Application -> IO ()
 activateApp app = do
     win <- initWindow app
+    initStyle win
     iconView <- initIcons win
     #add win iconView
     #showAll win

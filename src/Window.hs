@@ -24,7 +24,6 @@ initWindow app = do
 
     initWayland win
     runMaybeT $ initX11 win
-    addCSS win
     return win
 
 initWayland :: Gtk.ApplicationWindow -> IO ()
@@ -46,12 +45,3 @@ initX11 win = do
     width <- Gdk.getRectangleWidth rect
     height <- Gdk.getRectangleHeight rect
     Gtk.windowSetDefaultSize win width height
-
-addCSS :: Gtk.ApplicationWindow -> IO ()
-addCSS win = do
-    screen <- Gtk.windowGetScreen win
-    settings <- Gtk.settingsGetForScreen screen
-    Gtk.setSettingsGtkApplicationPreferDarkTheme settings True
-    cssProvider <- Gtk.cssProviderNew
-    Gtk.cssProviderLoadFromData cssProvider "* { background-color: transparent; }"
-    Gtk.styleContextAddProviderForScreen screen cssProvider 800
