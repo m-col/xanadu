@@ -34,6 +34,7 @@ initIcons win = do
         , #textColumn := 0
         , #tooltipColumn := 0
         , #pixbufColumn := 1
+        , #reorderable := True
         ]
     on iconView #itemActivated $ onItemActivated listStore root
     return iconView
