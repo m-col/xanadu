@@ -10,9 +10,8 @@ handler.
 
 Currently, the displayed folder is ``${XDG_DESKTOP_DIR:-$HOME/Desktop}``.
 
-xanadu is Gtk-based and so the style of icons and possibly other parts will be
-determined by your configured Gtk theme.
-
+xanadu is Gtk-based and so styling will be determined by your configured Gtk
+theme.
 
 Usage
 -----
@@ -26,6 +25,7 @@ packaged by many *nix distributions ("perl-file-mimeinfo" on Arch Linux), and
 folder handling to ``thunar``:
 
 .. code-block:: sh
+
    xanadu | while read item
    do
        if test -d "$item"
