@@ -28,7 +28,7 @@ initWindow app = do
         Nothing -> error "Could not open display."
         Just (width, height) -> Gtk.windowSetDefaultSize win width height
 
-    addCSS
+    addCSS win
     Gtk.windowSetTypeHint win Enums.WindowTypeHintDesktop
     return win
 
@@ -41,11 +41,9 @@ getGeometry = do
     height <- Gdk.getRectangleHeight rect
     return (width, height)
 
-addCSS :: IO ()
-addCSS =
-    Gdk.screenGetDefault >>= \case
-        Nothing -> error "Could not find screen."
-        Just screen -> do
-            cssProvider <- Gtk.cssProviderNew
-            Gtk.cssProviderLoadFromData cssProvider "* { background-color: transparent; }"
-            Gtk.styleContextAddProviderForScreen screen cssProvider 800
+addCSS :: Gtk.ApplicationWindow -> IO ()
+addCSS win = do
+    screen <- Gtk.windowGetScreen win
+    cssProvider <- Gtk.cssProviderNew
+    Gtk.cssProviderLoadFromData cssProvider "* { background-color: transparent; }"
+    Gtk.styleContextAddProviderForScreen screen cssProvider 800
