@@ -44,6 +44,8 @@ getGeometry = do
 addCSS :: Gtk.ApplicationWindow -> IO ()
 addCSS win = do
     screen <- Gtk.windowGetScreen win
+    settings <- Gtk.settingsGetForScreen screen
+    Gtk.setSettingsGtkApplicationPreferDarkTheme settings True
     cssProvider <- Gtk.cssProviderNew
     Gtk.cssProviderLoadFromData cssProvider "* { background-color: transparent; }"
     Gtk.styleContextAddProviderForScreen screen cssProvider 800
