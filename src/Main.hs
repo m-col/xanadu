@@ -7,6 +7,7 @@ import Icons (initIcons)
 import Style (initStyle)
 import Window (initWindow)
 
+import Control.Monad ((<=<))
 import Data.GI.Base
 import qualified GI.Gio as Gio
 import qualified GI.Gtk as Gtk
@@ -22,10 +23,5 @@ main = do
     return ()
 
 activateApp :: Gtk.Application -> IO ()
-activateApp app = do
-    win <- initWindow app
-    initStyle win
-    iconView <- initIcons win
-    #add win iconView
-    #showAll win
-    return ()
+activateApp =
+    mconcat . sequenceA [initStyle, initIcons, Gtk.widgetShowAll] <=< initWindow

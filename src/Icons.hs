@@ -21,7 +21,7 @@ import qualified GI.GdkPixbuf as Pixbuf
 import qualified GI.Gio as Gio
 import qualified GI.Gtk as Gtk
 
-initIcons :: Gtk.ApplicationWindow -> IO Gtk.IconView
+initIcons :: Gtk.ApplicationWindow -> IO ()
 initIcons win = do
     pixbufGType <- glibType @Pixbuf.Pixbuf
     listStore <- Gtk.listStoreNew [GType.gtypeString, pixbufGType]
@@ -39,7 +39,8 @@ initIcons win = do
         , #activateOnSingleClick := True
         ]
     on iconView #itemActivated $ onItemActivated listStore root
-    return iconView
+    Gtk.containerAdd win iconView
+    return ()
 
 -- Root folder is $(XDG_DESKTOP_DIR:-$HOME/Desktop)
 getRoot :: IO FilePath
