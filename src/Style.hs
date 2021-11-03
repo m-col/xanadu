@@ -38,7 +38,7 @@ addCSS win = do
     Gtk.styleContextAddProviderForScreen screen cssProvider 800
 
     -- Default CSS
-    Gtk.cssProviderLoadFromData cssProvider "* { background-color: transparent; }"
+    Gtk.cssProviderLoadFromData cssProvider "window,iconview { background-color: transparent; }"
 
     -- Custom CSS
     configDir <- getConfigDir

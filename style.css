@@ -1,3 +1,36 @@
+/* Styling for xanada desktop metaphor
+ *
+ * GUI elements can be styled using GTK's CSS. The core widget inside the window
+ * is an icon view, and everything else is a child of that. For options, see:
+ * https://developer-old.gnome.org/gtk3/stable/chap-css-properties.html
+ */
+
+/* Make the main window background transparent */
 window,iconview {
     background-color: transparent;
 }
+
+/* Style the selected icon */
+.view:selected {
+    background-color: #15539e;
+    border-radius: 3px;
+    outline-style: none;
+}
+
+/* Style the selection rubberband */
+rubberband {
+    border: 1px solid #0f3b71;
+    background-color: rgba(15, 59, 113, 0.3);
+}
+
+/* Other styling ideas */
+/*
+iconview {
+    padding: 3px;
+}
+
+.view:selected {
+    background-color: unset;
+    border: 1px solid #0f3b71;
+}
+*/
