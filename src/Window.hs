@@ -45,3 +45,4 @@ initX11 win = do
     width <- Gdk.getRectangleWidth rect
     height <- Gdk.getRectangleHeight rect
     Gtk.windowSetDefaultSize win width height
+    Gtk.windowSetKeepBelow win True
