@@ -35,6 +35,8 @@ initIcons win = do
         , #tooltipColumn := 0
         , #pixbufColumn := 1
         , #reorderable := True
+        , #itemOrientation := Gtk.OrientationVertical
+        , #activateOnSingleClick := True
         ]
     on iconView #itemActivated $ onItemActivated listStore root
     return iconView
